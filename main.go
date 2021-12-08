@@ -100,7 +100,7 @@ var days = []func(path string){
 	skipped, skipped,
 	skipped, skipped,
 	skipped, skipped,
-	skipped, skipped,
+	adventDay4A, adventDay4B,
 	adventDay5A, adventDay5B,
 	adventDay6A, adventDay6B,
 	adventDay7A, adventDay7B,

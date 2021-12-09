@@ -50,48 +50,6 @@ func toInts(strs []string) []int {
 }
 
 
-func checkSlope(isTree []bool, width, height, slopeX,slopeY int) int {
-	xPos := 0
-	treesHit := 0
-	for yPos := 0; yPos < height; yPos += slopeY {
-		if isTree[yPos*width + (xPos % width)] {
-			treesHit++
-		}
-		xPos += slopeX
-	}
-	return treesHit
-}
-
-
-
-// readLines reads a whole file into memory
-// and returns a slice of its lines.
-func readPassports(path string) ([]string) {
-	file, err := os.Open(path)
-	if err != nil {
-		 panic(err)
-	}
-	defer file.Close()
-
-	var passports []string
-	scanner := bufio.NewScanner(file)
-	passport := ""
-	for scanner.Scan() {
-		line := scanner.Text()
-		if len(line) > 0 {
-			passport += line + "\n"
-		} else {
-			passports = append(passports, passport)
-			passport = ""
-		}
-	}
-	err = scanner.Err()
-	if err != nil {
-		panic(err)
-	}
-	return passports
-}
-
 func skipped(path string) {
 	fmt.Printf("skipped this one\n")
 }
@@ -105,6 +63,7 @@ var days = []func(path string){
 	adventDay6A, adventDay6B,
 	adventDay7A, adventDay7B,
 	adventDay8A, adventDay8B,
+	adventDay9A, adventDay9B,
 }
 
 func usage() {
@@ -177,10 +136,6 @@ func main() {
 		days[bIndex](filename)
 		fmt.Printf("\n")
 	}
-
-
-
-
 }
 
 

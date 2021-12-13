@@ -67,10 +67,10 @@ func adventDay13B(path string) {
 	fmt.Printf("%d->%d, %d-%d\n", minX, maxX, minY, maxY)
 	for i := minY; i <= maxY; i++ {
 		for j := minX; j <= maxX; j++ {
-			char := '.'
+			char := ' '
 			_,ok := points[[2]int{j,i}]
 			if ok {
-				char = '#'
+				char = '█'
 			}
 			fmt.Printf("%c", char)
 		}

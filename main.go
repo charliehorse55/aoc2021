@@ -74,6 +74,7 @@ var days = []func(path string){
 	adventDay17A, adventDay17B,
 	adventDay18A, adventDay18B,
 	adventDay19A, adventDay19B,
+	adventDay20A, adventDay20B,
 }
 
 func usage() {

@@ -77,7 +77,6 @@ func canMoveToHallway(hallway *[11]int, hallwaySpot, room int) bool {
 	return true
 }
 
-var count = 0
 
 var validHallSpots = [7]int{0,1,3,5,7,9,10}
 
@@ -91,7 +90,6 @@ func day23Cost(state state23) int {
 	if ok {
 		return result
 	}
-	count++
 	//if count == 288020 {
 	//	fmt.Println(state)
 	//}
@@ -181,7 +179,7 @@ func adventDay23A(path string) {
 	fmt.Printf("%s\n", state)
 	minCost := day23Cost(state)
 	fmt.Printf("minimum cost is %d\n", minCost)
-	fmt.Printf("called %d times\n", count)
+	fmt.Printf("explored %d states\n", len(day23Memory))
 }
 
 type state23b struct {
@@ -259,7 +257,6 @@ func day23bCost(state state23b) int {
 	if ok {
 		return result
 	}
-	//count++
 	//if count == 288020 {
 	//	fmt.Println(state)
 	//}
@@ -351,5 +348,6 @@ func adventDay23B(path string) {
 	fmt.Printf("%s\n", state)
 	minCost := day23bCost(state)
 	fmt.Printf("minimum cost is %d\n", minCost)
+	fmt.Printf("explored %d states\n", len(day23bMemory))
 
 }

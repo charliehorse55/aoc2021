@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -135,6 +136,9 @@ func adventDay24A(path string) {
 
 	var program []instruction
 	var xOffsets []int
+	divsLeft := 7
+	divsLeftPerRound := make([]int, 14)
+
 	for i,line := range lines {
 		f := strings.Fields(line)
 		op := f[0]
@@ -158,8 +162,16 @@ func adventDay24A(path string) {
 		if i % 18 == 5 {
 			xOffsets = append(xOffsets, ins.b)
 		}
+		if i % 18 == 4 {
+			if lines[i][5:] != lines[i%18][5:] {
+				divsLeft--
+			}
+			divsLeftPerRound[i/18] = divsLeft
+		}
+
 		program = append(program, ins)
 	}
+	fmt.Printf("divs left: %v\n", divsLeftPerRound)
 
 
 
@@ -221,54 +233,66 @@ func adventDay24A(path string) {
 		input [14]int
 	}
 
-	states := make(map[aluState][14]int)
+	states := make(map[progress]bool)
 
-	states[aluState{}] = makeInput("00000000000000")
+	states[progress{
+		aluState: aluState{},
+		input:    [14]int{},
+	}] = true
 
-	fmt.Printf("%d states\n", len(states))
+	//fmt.Printf("%d states\n", len(states))
 	for round := 0; round < 14; round++ {
-		nextRound := make(map[aluState][14]int)
+		nextRound := make(map[progress]bool)
 		//var minState aluState
 		//minState.regs[zReg] = math.MaxInt
-		for stateOrig,input := range states {
+		for progOrig := range states {
 			for i := 1; i <= 9; i++ {
-				state := stateOrig
-				input[round] = i
-				state.Run(program[round*18:(round+1)*18], input[round:])
-				save := true
-				if round < 13 && xOffsets[round+1] < 10 {
-					nextX := (state.regs[zReg] % 26) + xOffsets[round+1]
-					if nextX < 1 || nextX > 9 {
-						save = false
-					}
+				prog := progOrig
+				prog.input[round] = i
+				prog.Run(program[round*18:(round+1)*18], prog.input[round:])
+				//save := true
+				if prog.regs[zReg] < int(math.Pow(26, float64(divsLeftPerRound[round]))) {
+					//nextX := (prog.regs[zReg] % 26) + xOffsets[round+1]
+					//if nextX < 1 || nextX > 9 {
+					//	save = false
+					//}
+					nextRound[prog] = true
 				}
-				if save {
-					nextRound[state] = input
-				}
+				//if save {
+				//	mod := prog.regs[zReg] % 26
+				//	nextRound[mod] = prog
+				//}
 			}
 		}
 
 		states = nextRound
 		fmt.Printf("after %d rounds, %d states\n", round+1, len(states))
 	}
-	fmt.Printf("pruning non-zeros\n")
-	nextRound := make(map[aluState][14]int)
-	for state,in := range states {
-		if state.regs[zReg] == 0 {
-			nextRound[state] = in
-		}
-	}
-	states = nextRound
+	fmt.Printf("found %d results\n", len(states))
+	//for val := range states {
+	//	fmt.Printf("%s\n", inputToString(val.input))
+	//}
+	//fmt.Printf("pruning non-zeros\n")
+	//for key,prog := range states {
+	//	if prog.regs[zReg] != 0 {
+	//		delete(states, key)
+	//	}
+	//}
 
 	fmt.Printf("finding max!\n")
 	max := 0
-	for _,val := range states {
-		x := inputToNumber(val)
+	min := math.MaxInt
+	for val := range states {
+		x := inputToNumber(val.input)
 		if x > max {
 			max = x
 		}
+		if x < min {
+			min = x
+		}
 	}
-	fmt.Printf("max = %d", max)
+	fmt.Printf("max = %d\n", max)
+	fmt.Printf("min = %d\n", min)
 	//fmt.Printf("states: %v\n", states)
 
 	//minInput := makeInput("11778183565248")
@@ -279,9 +303,11 @@ func adventDay24A(path string) {
 	//	for i := min; i <= max; i++ {
 	//		input := minInput
 	//		input[digit] += i
-	//		var alu aluState
-	//		alu.Run(program, input)
-	//		fmt.Printf("%2d-%d: %d\n", digit, minInput[digit]+i, alu.regs[zReg])
+			input := makeInput("29578186816119")
+			var alu aluState
+			alu.Run(program, input[:])
+			fmt.Printf("zReg = %d\n", alu.regs[zReg])
+			//fmt.Printf("%2d-%d: %d\n", digit, minInput[digit]+i, alu.regs[zReg])
 	//	}
 	//	fmt.Printf("\n")
 	//}
@@ -290,17 +316,26 @@ func adventDay24A(path string) {
 
 
 func adventDay24B(path string) {
-	lines := readLines(path)
-	for i := 18; i < len(lines); i++ {
-		if lines[i][:3] != lines[i%18][:3] {
-			fmt.Printf("different op on line %d\n", i+1)
-		}
-		if lines[i][4] != lines[i%18][4] {
-			fmt.Printf("different argument on line %d\n", (i+1)%18)
-		}
-		if lines[i][5:] != lines[i%18][5:] {
-			fmt.Printf("different 2nd argument on line %3d - (%9s vs %3s)\n", (i+1)%18, lines[i], lines[i%18][5:])
-		}
-
-	}
+	//lines := readLines(path)
+	//
+	//divsLeft := 7
+	//divsLeftPerRound := make([]int, 14)
+	//
+	//for i := 18; i < len(lines); i++ {
+	//	if i % 18 == 4 {
+	//		if lines[i][5:] != lines[i%18][5:] {
+	//			divsLeft--
+	//		}
+	//		divsLeftPerRound[i/18] = divsLeft
+	//	}
+	//	if lines[i][:3] != lines[i%18][:3] {
+	//		fmt.Printf("different op on line %d\n", i+1)
+	//	}
+	//	if lines[i][4] != lines[i%18][4] {
+	//		fmt.Printf("different argument on line %d\n", (i+1)%18)
+	//	}
+	//	if lines[i][5:] != lines[i%18][5:] {
+	//		fmt.Printf("different 2nd argument on line %3d - (%9s vs %3s)\n", (i+1)%18, lines[i], lines[i%18][5:])
+	//	}
+	//}
 }

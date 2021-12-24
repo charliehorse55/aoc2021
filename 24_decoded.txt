@@ -1,18 +1,32 @@
 inp w
+
+#load z into x, then %= 26
 mul x 0
 add x z
 mod x 26
+
+#does nothing
 div z 1
+
+#add 14 to x, then store the negated result of comparing to w
+#since w in range 1-9, and add 14, result is x always = 1
 add x 14
 eql x w
 eql x 0
+
+#store 26 in y
 mul y 0
 add y 25
 mul y x
 add y 1
+
+#multiply z by 26
 mul z y
+
+#store w + 14 into y
 mul y 0
 add y w
 add y 14
 mul y x
+
 add z y
